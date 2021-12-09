@@ -4,23 +4,15 @@ using System.Linq;
 
 namespace ConsoleUtils
 {
-    /// <summary>A collection of utilities for console interaction</summary>
-    public static class CUtil
+    internal static class KeyGroups
     {
-        /// <summary>Ask the user for a [Y]es or [N]o response</summary>
-        public static bool AskYN()
-        {
-            ConsoleKeyInfo key = Console.ReadKey(true);
-            while (key.Key != ConsoleKey.Y && key.Key != ConsoleKey.N)
-                key = Console.ReadKey(true);
-
-            bool y = key.Key == ConsoleKey.Y;
-            Console.WriteLine(y ? "y" : "n");
-            return y;
-        }
+        /// <summary>Which keys represent yes and no</summary>
+        public static readonly Dictionary<ConsoleKey, bool> YesNo = new Dictionary<ConsoleKey, bool>() {
+            {ConsoleKey.Y, true}, {ConsoleKey.N, false},
+        };
 
         /// <summary>Which keys represent base-10 digits</summary>
-        static readonly Dictionary<ConsoleKey, int> Digits = new Dictionary<ConsoleKey, int>() {
+        public static readonly Dictionary<ConsoleKey, byte> Digits = new Dictionary<ConsoleKey, byte>() {
             {ConsoleKey.D0, 0}, {ConsoleKey.NumPad0, 0},
             {ConsoleKey.D1, 1}, {ConsoleKey.NumPad1, 1},
             {ConsoleKey.D2, 2}, {ConsoleKey.NumPad2, 2},
@@ -32,17 +24,44 @@ namespace ConsoleUtils
             {ConsoleKey.D8, 8}, {ConsoleKey.NumPad8, 8},
             {ConsoleKey.D9, 9}, {ConsoleKey.NumPad9, 9},
         };
+    }
 
-        /// <summary>Ask the user for a positive integer</summary>
-        public static int AskInt()
+    /// <summary>A collection of utilities for console interaction</summary>
+    public static class CUtil
+    {
+        /// <summary>Ask the user for a [Y]es or [N]o response</summary>
+        [Obsolete("Use AskYesNo instead")]
+        public static bool AskYN() => AskYesNo();
+
+        /// <summary>Ask the user for a [Y]es or [N]o response</summary>
+        public static bool AskYesNo() => AskYesNo(b => Console.WriteLine(b ? "y" : "n"));
+
+        /// <summary>Ask the user for a [Y]es or [N]o response</summary>
+        public static bool AskYesNo(Action<bool> print)
         {
             ConsoleKeyInfo key = Console.ReadKey(true);
-            List<int> digits = new List<int>();
+            while (KeyGroups.YesNo.ContainsKey(key.Key))
+                key = Console.ReadKey(true);
+
+            bool y = KeyGroups.YesNo[key.Key];
+            print(y);
+            return y;
+        }
+
+        /// <summary>Ask the user for a positive integer</summary>
+        [Obsolete("Use AskPositiveInteger instead")]
+        public static int AskInt() => AskPositiveInteger();
+
+        /// <summary>Ask the user for a positive integer</summary>
+        public static int AskPositiveInteger()
+        {
+            ConsoleKeyInfo key = Console.ReadKey(true);
+            List<byte> digits = new List<byte>();
             while (key.Key != ConsoleKey.Enter || digits.Count <= 0)
             {
-                if (Digits.ContainsKey(key.Key))
+                if (KeyGroups.Digits.ContainsKey(key.Key))
                 {
-                    int digit = Digits[key.Key];
+                    byte digit = KeyGroups.Digits[key.Key];
                     digits.Add(digit);
                     Console.Write(digit);
                 }
@@ -59,7 +78,7 @@ namespace ConsoleUtils
             }
             Console.WriteLine();
 
-            return digits.Aggregate((last, next) => last * 10 + next);
+            return digits.Aggregate(0, (last, next) => last * 10 + next);
         }
     }
 }
