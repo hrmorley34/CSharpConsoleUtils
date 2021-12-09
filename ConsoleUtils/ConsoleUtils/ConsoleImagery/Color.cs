@@ -52,7 +52,7 @@ namespace ConsoleUtils.ConsoleImagery.Color
             if (obj == null || GetType() != obj.GetType()) return false;
             return Equals((ConsoleColorPair)obj);
         }
-        public override int GetHashCode() => ((int)Fg << 4) + (int)Bg;
+        public override int GetHashCode() => (Fg == null ? 0 : ((int)Fg << 5) + (1 << 4)) + (Bg == null ? 0 : ((int)Bg << 1) + 1);
         public static bool operator ==(ConsoleColorPair a, ConsoleColorPair b) => !ReferenceEquals(a, null) && a.Equals(b);
         public static bool operator !=(ConsoleColorPair a, ConsoleColorPair b) => ReferenceEquals(a, null) || !a.Equals(b);
 

@@ -56,7 +56,7 @@ namespace ConsoleUtils.ConsoleImagery.Image
             if (obj == null || GetType() != obj.GetType()) return false;
             return Equals((ColoredChar)obj);
         }
-        public override int GetHashCode() => Char.GetHashCode() ^ Color.GetHashCode();
+        public override int GetHashCode() => (Char.GetHashCode() * 31) + Color.GetHashCode();
         public static bool operator ==(ColoredChar a, ColoredChar b) => !ReferenceEquals(a, null) && a.Equals(b);
         public static bool operator !=(ColoredChar a, ColoredChar b) => ReferenceEquals(a, null) || !a.Equals(b);
 
