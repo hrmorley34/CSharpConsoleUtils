@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ConsoleUtils.ConsoleImagery.Color;
+using ConsoleUtils.ConsoleImagery.Exceptions;
 using ConsoleUtils.ConsoleImagery.Util.Linq;
 
 namespace ConsoleUtils.ConsoleImagery.Image
@@ -237,12 +238,12 @@ namespace ConsoleUtils.ConsoleImagery.Image
         {
             ColoredTextImage[] imagearr = images.ToArray();
             if (imagearr.Length <= 0)
-                throw new Exception();
+                throw new MismatchedHeightException();
             else if (imagearr.Length == 1)
                 return imagearr[0];
 
             if (!imagearr.All(im => im.YSize == imagearr[0].YSize))
-                throw new Exception();
+                throw new MismatchedHeightException();
 
             ColoredTextImage dest = new ColoredTextImage(imagearr.Sum(im => im.XSize + separation) - separation, imagearr[0].YSize);
             imagearr.Aggregate(0,
@@ -271,13 +272,13 @@ namespace ConsoleUtils.ConsoleImagery.Image
         {
             if (a.YSize == 1)
                 return a.HorizontalAppend(Text(b));
-            throw new Exception();
+            throw new MismatchedHeightException();
         }
         public static ColoredTextImage operator +(string a, ColoredTextImage b)
         {
             if (b.YSize == 1)
                 return Text(a).HorizontalAppend(b);
-            throw new Exception();
+            throw new MismatchedHeightException();
         }
     }
 }
