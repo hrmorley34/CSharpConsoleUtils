@@ -7,7 +7,7 @@ using ConsoleUtils.ConsoleImagery.Util.Linq;
 namespace ConsoleUtils.ConsoleImagery.Image
 {
     /// <summary>A character and a colour</summary>
-    public class ColoredChar : System.Runtime.CompilerServices.ITuple
+    public class ColoredChar : System.Runtime.CompilerServices.ITuple, IEquatable<ColoredChar>
     {
         /// <summary>Colour of the character</summary>
         public readonly ConsoleColorPair Color;
@@ -49,6 +49,16 @@ namespace ConsoleUtils.ConsoleImagery.Image
             }
         }
 
+        public bool Equals(ColoredChar obj) => !ReferenceEquals(obj, null) && Color == obj.Color && Char == obj.Char;
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType()) return false;
+            return Equals((ColoredChar)obj);
+        }
+        public override int GetHashCode() => Char.GetHashCode() ^ Color.GetHashCode();
+        public static bool operator ==(ColoredChar a, ColoredChar b) => !ReferenceEquals(a, null) && a.Equals(b);
+        public static bool operator !=(ColoredChar a, ColoredChar b) => ReferenceEquals(a, null) || !a.Equals(b);
+
         /// <summary>Deconstruct into colour and character</summary>
         public void Deconstruct(out ConsoleColorPair color, out char c)
         {
@@ -58,7 +68,7 @@ namespace ConsoleUtils.ConsoleImagery.Image
     }
 
     /// <summary>An image made up of characters of colors</summary>
-    public class ColoredTextImage
+    public class ColoredTextImage : IEquatable<ColoredTextImage>
     {
         /// <summary>The 2D image</summary>
         public ColoredChar[,] Image;
@@ -244,6 +254,16 @@ namespace ConsoleUtils.ConsoleImagery.Image
             );
             return dest;
         }
+
+        public bool Equals(ColoredTextImage obj) => !ReferenceEquals(obj, null) && IterRows().EnumerableEquals(obj.IterRows());
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType()) return false;
+            return Equals((ColoredTextImage)obj);
+        }
+        public override int GetHashCode() => Image.GetHashCode();
+        public static bool operator ==(ColoredTextImage a, ColoredTextImage b) => !ReferenceEquals(a, null) && a.Equals(b);
+        public static bool operator !=(ColoredTextImage a, ColoredTextImage b) => ReferenceEquals(a, null) || !a.Equals(b);
 
         public static ColoredTextImage operator +(ColoredTextImage a, ColoredTextImage b)
             => a.HorizontalAppend(b);

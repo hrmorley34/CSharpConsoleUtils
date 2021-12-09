@@ -83,5 +83,17 @@ namespace ConsoleUtils.ConsoleImagery.Util.Linq
         /// <summary>Turn a jagged array into a 2D array, mapping each element using <c>map</c></summary>
         public static MapT[,] Dejagged<InT, MapT>(this IEnumerable<IEnumerable<InT>> arr, Func<InT, MapT> map)
             => Dejagged<InT, MapT>(arr.Select(e => e.ToArray()).ToArray(), map);
+
+        public static bool EnumerableEquals<T>(this IEnumerable<T> a, IEnumerable<T> b, Func<T, T, bool> test)
+        {
+            if (a.Count() != b.Count()) return false;
+            return a.Zip(b).All((pair) => test(pair.First, pair.Second));
+        }
+
+        public static bool EnumerableEquals<T>(this IEnumerable<T> a, IEnumerable<T> b) where T : IEquatable<T>
+            => EnumerableEquals(a, b, (aitem, bitem) => aitem.Equals(bitem));
+
+        public static bool EnumerableEquals<T>(this IEnumerable<IEnumerable<T>> a, IEnumerable<IEnumerable<T>> b) where T : IEquatable<T>
+            => EnumerableEquals(a, b, (aitem, bitem) => EnumerableEquals(aitem, bitem));
     }
 }

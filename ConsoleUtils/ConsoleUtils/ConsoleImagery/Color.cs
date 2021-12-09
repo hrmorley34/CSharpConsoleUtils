@@ -3,7 +3,7 @@ using System;
 namespace ConsoleUtils.ConsoleImagery.Color
 {
     /// <summary>A foreground and a background <c>ConsoleColor</c></summary>
-    public class ConsoleColorPair
+    public class ConsoleColorPair : IEquatable<ConsoleColorPair>
     {
         /// <summary>Background colour</summary>
         public readonly Nullable<ConsoleColor> Bg = null;
@@ -46,7 +46,15 @@ namespace ConsoleUtils.ConsoleImagery.Color
         public (ConsoleColor, ConsoleColor) Render(ConsoleColor fg, ConsoleColor bg)
             => (Fg == null ? fg : Fg.Value, Bg == null ? bg : Bg.Value);
 
-        public bool Equals(ConsoleColorPair obj) => Fg == obj.Fg && Bg == obj.Bg;
+        public bool Equals(ConsoleColorPair obj) => !ReferenceEquals(obj, null) && Fg == obj.Fg && Bg == obj.Bg;
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType()) return false;
+            return Equals((ConsoleColorPair)obj);
+        }
+        public override int GetHashCode() => ((int)Fg << 4) + (int)Bg;
+        public static bool operator ==(ConsoleColorPair a, ConsoleColorPair b) => !ReferenceEquals(a, null) && a.Equals(b);
+        public static bool operator !=(ConsoleColorPair a, ConsoleColorPair b) => ReferenceEquals(a, null) || !a.Equals(b);
 
         public void Deconstruct(out Nullable<ConsoleColor> fg, out Nullable<ConsoleColor> bg)
         {
