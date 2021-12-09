@@ -72,24 +72,24 @@ namespace ConsoleUtils.ConsoleImagery.Image
     public class ColoredTextImage : IEquatable<ColoredTextImage>
     {
         /// <summary>The 2D image</summary>
-        public ColoredChar[,] Image;
+        public readonly ColoredChar[,] Image;
 
         public (int, int) Dimensions { get => (XSize, YSize); }
         public int XSize { get => Image.GetLength(0); }
         public int YSize { get => Image.GetLength(1); }
 
         /// <summary>Set the image using <c>text</c> as characters and <c>color</c> for every cell</summary>
-        protected void FillFromImage(IEnumerable<IEnumerable<char>> text, ConsoleColorPair color)
-            => Image = text.Dejagged(c => new ColoredChar(color, c));
+        protected ColoredChar[,] FilledFromImage(IEnumerable<IEnumerable<char>> text, ConsoleColorPair color)
+            => text.Dejagged(c => new ColoredChar(color, c));
 
         /// <summary>Set the image using <c>text</c> as characters and colours</summary>
-        protected void FillFromImage(IEnumerable<IEnumerable<ColoredChar>> text)
-            => Image = text.Dejagged();
+        protected ColoredChar[,] FilledFromImage(IEnumerable<IEnumerable<ColoredChar>> text)
+            => text.Dejagged();
 
         /// <summary>Create a new uninitialised image</summary>
         public ColoredTextImage() { }
 
-        /// <summary>Create an image with size <c>x</c> by <c>y</c></summary>
+        /// <summary>Create an empty image with size <c>x</c> by <c>y</c></summary>
         public ColoredTextImage(int x, int y)
         {
             Image = new ColoredChar[x, y];
@@ -98,19 +98,19 @@ namespace ConsoleUtils.ConsoleImagery.Image
         /// <summary>Create an image from the grid of characters</summary>
         public ColoredTextImage(IEnumerable<IEnumerable<char>> text, ConsoleColorPair color)
         {
-            FillFromImage(text, color);
+            Image = FilledFromImage(text, color);
         }
 
         /// <summary>Create an image from the grid of characters</summary>
         public ColoredTextImage(IEnumerable<string> text, ConsoleColorPair color)
         {
-            FillFromImage(text.Select(s => s.ToCharArray()), color);
+            Image = FilledFromImage(text.Select(s => s.ToCharArray()), color);
         }
 
         /// <summary>Create an image from the grid of characters and colours</summary>
         public ColoredTextImage(IEnumerable<IEnumerable<ColoredChar>> text)
         {
-            FillFromImage(text);
+            Image = FilledFromImage(text);
         }
 
         /// <summary>Create a <c>ColoredTextImage</c> containing text.</summary>
@@ -126,25 +126,10 @@ namespace ConsoleUtils.ConsoleImagery.Image
 
         /// <summary>Create a <c>ColoredTextImage</c> containing text.</summary>
         public static ColoredTextImage Text(ColoredTextImage text, ConsoleColorPair color)
-        {
-            ColoredTextImage t = text.Copy();
-            for (int y = 0; y < text.YSize; y++)
-            {
-                for (int x = 0; x < text.XSize; x++)
-                {
-                    t.Image[x, y] = t.Image[x, y].WithColor(t.Image[x, y].Color.Render(color));
-                }
-            }
-            return t;
-        }
+            => new ColoredTextImage(text.IterRows().Select(e => e.Select(c => c.WithColor(c.Color.Render(color)))));
 
         /// <summary>Return a copy of the image</summary>
-        public ColoredTextImage Copy()
-        {
-            ColoredTextImage copy = new ColoredTextImage();
-            copy.Image = Image;
-            return copy;
-        }
+        public ColoredTextImage Copy() => new ColoredTextImage(IterRows());
 
         /// <summary>Iterate over a particular row of the image.</summary>
         private IEnumerable<ColoredChar> IterRow(int y)
@@ -197,8 +182,7 @@ namespace ConsoleUtils.ConsoleImagery.Image
                 {
                     foreach (ColoredChar c in row)
                     {
-                        ColoredChar pc = c;
-                        if (c == null) pc = new ColoredChar(ConsoleColorPair.Reset, ' ');
+                        ColoredChar pc = c == null ? new ColoredChar(ConsoleColorPair.Reset, ' ') : c;
                         s.Set(pc.Color);
                         Console.Write(pc.Char);
                     }
@@ -207,25 +191,24 @@ namespace ConsoleUtils.ConsoleImagery.Image
             if (newline && wrapnext) Console.WriteLine();
         }
 
-        /// <summary>Overlay another image over the top of this one, offset by <c>position</c></summary>
+        /// <summary>Return a new image containing another image overlayed over the top of this one, offset by <c>position</c></summary>
         public ColoredTextImage Overlay(ColoredTextImage image, (int, int) position)
         {
             (int xOff, int yOff) = position;
-            for (int y = 0; y < image.YSize; y++)
+            return new ColoredTextImage(IterRows().Select((e, y) =>
             {
-                if (y + yOff < 0) continue;
-                if (y + yOff >= YSize) break;
-                for (int x = 0; x < image.XSize; x++)
+                int newy = y - yOff;
+                if (newy < 0 || newy >= image.YSize) return e;
+                return e.Select((c, x) =>
                 {
-                    if (x + xOff < 0) continue;
-                    if (x + xOff >= XSize) break;
-                    Image[x + xOff, y + yOff] = image.Image[x, y];
-                }
-            }
-            return this;
+                    int newx = x - xOff;
+                    if (newx < 0 || newx >= image.XSize) return c;
+                    return image.Image[newx, newy];
+                });
+            }));
         }
 
-        /// <summary>Replace all undefined colours with those from <c>color</c></summary>
+        /// <summary>Return this with all undefined colours replaced with those from <c>color</c></summary>
         public ColoredTextImage OverlayOnColor(ConsoleColorPair color)
             => new ColoredTextImage(IterRows().Select(row => row.Select(c => c.WithColor(c.Color.Render(color)))));
 
@@ -238,7 +221,7 @@ namespace ConsoleUtils.ConsoleImagery.Image
         {
             ColoredTextImage[] imagearr = images.ToArray();
             if (imagearr.Length <= 0)
-                throw new MismatchedHeightException();
+                throw new ArgumentException();
             else if (imagearr.Length == 1)
                 return imagearr[0];
 
@@ -246,13 +229,12 @@ namespace ConsoleUtils.ConsoleImagery.Image
                 throw new MismatchedHeightException();
 
             ColoredTextImage dest = new ColoredTextImage(imagearr.Sum(im => im.XSize + separation) - separation, imagearr[0].YSize);
-            imagearr.Aggregate(0,
-                (x, im) =>
-                {
-                    dest.Overlay(im, (x, 0));
-                    return x + im.XSize + separation;
-                }
-            );
+            int xinsert = 0;
+            foreach (ColoredTextImage im in imagearr)
+            {
+                dest = dest.Overlay(im, (xinsert, 0));
+                xinsert += im.XSize + separation;
+            }
             return dest;
         }
 

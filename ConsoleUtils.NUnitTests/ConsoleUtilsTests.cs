@@ -35,10 +35,13 @@ namespace ConsoleUtils.NUnitTests
         public void ColoredTextImage_Equals()
         {
             ColoredTextImage original = new ColoredTextImage(new string[] { "abc", "def" }, new ConsoleColorPair(ConsoleColor.Green));
-            ColoredTextImage copy = new ColoredTextImage(new string[] { "abc", "def" }, new ConsoleColorPair(ConsoleColor.Green));
+            ColoredTextImage copy = original.Copy();
+            ColoredTextImage copy2 = new ColoredTextImage(new string[] { "abc", "def" }, new ConsoleColorPair(ConsoleColor.Green));
             ColoredTextImage different = new ColoredTextImage(new string[] { "abc", "def", "ghi" }, new ConsoleColorPair(ConsoleColor.Green));
 
             Assert.That(original, Is.EqualTo(copy));
+            Assert.That(original, Is.EqualTo(copy2));
+            Assert.That(copy, Is.EqualTo(copy2));
             Assert.That(original, Is.Not.EqualTo(different));
         }
 
@@ -48,6 +51,7 @@ namespace ConsoleUtils.NUnitTests
             ConsoleColorPair originalcolor = new ConsoleColorPair(ConsoleColor.Green);
             ConsoleColorPair overlaycolor = new ConsoleColorPair(ConsoleColor.Blue);
             ColoredTextImage original = new ColoredTextImage(new string[] { "abc", "def" }, originalcolor);
+            ColoredTextImage original2 = original.Copy();
             ColoredTextImage overlay = new ColoredTextImage(new string[] { "hello" }, overlaycolor);
             ColoredTextImage final1 = new ColoredTextImage(new ColoredChar[][] {
                 new ColoredChar[] { new ColoredChar(originalcolor, 'a'), new ColoredChar(originalcolor, 'b'), new ColoredChar(originalcolor, 'c') },
@@ -58,10 +62,17 @@ namespace ConsoleUtils.NUnitTests
                 new ColoredChar[] { new ColoredChar(originalcolor, 'd'), new ColoredChar(overlaycolor, 'h'), new ColoredChar(overlaycolor, 'e') },
             });
 
-            Assert.That(original.Overlay(overlay, (1, 1)), Is.EqualTo(final1));
-            Assert.That(original.Overlay(overlay, (-3, 0)), Is.EqualTo(final2));
-            Assert.That(original.Overlay(overlay, (0, -1)), Is.EqualTo(final2));
-            Assert.That(original.Overlay(overlay, (0, 2)), Is.EqualTo(final2));
+            Assert.That(original, Is.EqualTo(original2));
+
+            ColoredTextImage overlayed1 = original.Overlay(overlay, (1, 1));
+            Assert.That(overlayed1, Is.EqualTo(final1));
+            Assert.That(original, Is.EqualTo(original2));
+            ColoredTextImage overlayed2 = overlayed1.Overlay(overlay, (-3, 0));
+            Assert.That(overlayed2, Is.EqualTo(final2));
+            ColoredTextImage overlayed3 = overlayed2.Overlay(overlay, (-3, 0));
+            Assert.That(overlayed3, Is.EqualTo(final2));
+            ColoredTextImage overlayed4 = overlayed3.Overlay(overlay, (-3, 0));
+            Assert.That(overlayed4, Is.EqualTo(final2));
         }
 
         [Test]
