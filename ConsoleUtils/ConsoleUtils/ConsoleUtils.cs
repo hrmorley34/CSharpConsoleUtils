@@ -40,7 +40,7 @@ namespace ConsoleUtils
         public static bool AskYesNo(Action<bool> print)
         {
             ConsoleKeyInfo key = Console.ReadKey(true);
-            while (KeyGroups.YesNo.ContainsKey(key.Key))
+            while (!KeyGroups.YesNo.ContainsKey(key.Key))
                 key = Console.ReadKey(true);
 
             bool y = KeyGroups.YesNo[key.Key];
