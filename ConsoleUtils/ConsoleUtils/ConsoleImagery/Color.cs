@@ -1,6 +1,6 @@
 using System;
 
-namespace ConsoleUtils.ConsoleImagery.Color
+namespace ConsoleUtils.ConsoleImagery
 {
     /// <summary>A foreground and a background <c>ConsoleColor</c></summary>
     public class ConsoleColorPair : IEquatable<ConsoleColorPair>

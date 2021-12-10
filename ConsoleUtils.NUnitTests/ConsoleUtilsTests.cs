@@ -1,8 +1,6 @@
 using NUnit.Framework;
 using System;
-using ConsoleUtils.ConsoleImagery.Color;
-using ConsoleUtils.ConsoleImagery.Exceptions;
-using ConsoleUtils.ConsoleImagery.Image;
+using ConsoleUtils.ConsoleImagery;
 
 namespace ConsoleUtils.NUnitTests
 {

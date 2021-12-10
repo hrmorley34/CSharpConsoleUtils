@@ -1,6 +1,6 @@
 using System;
 
-namespace ConsoleUtils.ConsoleImagery.Exceptions
+namespace ConsoleUtils.ConsoleImagery
 {
     [Serializable]
     public class MismatchedHeightException : ArgumentException

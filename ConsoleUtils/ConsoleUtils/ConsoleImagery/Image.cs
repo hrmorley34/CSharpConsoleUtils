@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ConsoleUtils.ConsoleImagery.Color;
-using ConsoleUtils.ConsoleImagery.Exceptions;
 using ConsoleUtils.ConsoleImagery.Util.Linq;
 
-namespace ConsoleUtils.ConsoleImagery.Image
+namespace ConsoleUtils.ConsoleImagery
 {
     /// <summary>A character and a colour</summary>
     public class ColoredChar : System.Runtime.CompilerServices.ITuple, IEquatable<ColoredChar>
