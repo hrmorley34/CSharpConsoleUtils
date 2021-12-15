@@ -40,19 +40,19 @@ namespace ConsoleUtils.ConsoleImagery
 
         /// <summary>Return this, but with <c>null</c>s replaced by values from <c>default</c></summary>
         public ConsoleColorPair Render(ConsoleColorPair @default)
-            => new ConsoleColorPair(Fg == null ? @default.Fg : Fg.Value, Bg == null ? @default.Bg : Bg.Value);
+            => new ConsoleColorPair(!Fg.HasValue ? @default.Fg : Fg.Value, !Bg.HasValue ? @default.Bg : Bg.Value);
 
         /// <summary>Return this, but with <c>null</c>s replaced by <c>fg</c> or <c>bg</c></summary>
         public (ConsoleColor, ConsoleColor) Render(ConsoleColor fg, ConsoleColor bg)
-            => (Fg == null ? fg : Fg.Value, Bg == null ? bg : Bg.Value);
+            => (!Fg.HasValue ? fg : Fg.Value, !Bg.HasValue ? bg : Bg.Value);
 
         public bool Equals(ConsoleColorPair obj) => !ReferenceEquals(obj, null) && Fg == obj.Fg && Bg == obj.Bg;
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType()) return false;
+            if (ReferenceEquals(obj, null) || GetType() != obj.GetType()) return false;
             return Equals((ConsoleColorPair)obj);
         }
-        public override int GetHashCode() => (Fg == null ? 0 : ((int)Fg << 5) + (1 << 4)) + (Bg == null ? 0 : ((int)Bg << 1) + 1);
+        public override int GetHashCode() => (!Fg.HasValue ? 0 : ((int)Fg << 5) + (1 << 4)) + (!Bg.HasValue ? 0 : ((int)Bg << 1) + 1);
         public static bool operator ==(ConsoleColorPair a, ConsoleColorPair b) => !ReferenceEquals(a, null) && a.Equals(b);
         public static bool operator !=(ConsoleColorPair a, ConsoleColorPair b) => ReferenceEquals(a, null) || !a.Equals(b);
 
@@ -105,17 +105,17 @@ namespace ConsoleUtils.ConsoleImagery
         /// <summary>Set the current console colours, or use the stored colours</summary>
         public void Set(Nullable<ConsoleColor> fg, Nullable<ConsoleColor> bg)
         {
-            if (fg != null) Console.ForegroundColor = fg.Value;
+            if (fg.HasValue) Console.ForegroundColor = fg.Value;
             else Console.ForegroundColor = OldFg;
-            if (bg != null) Console.BackgroundColor = bg.Value;
+            if (bg.HasValue) Console.BackgroundColor = bg.Value;
             else Console.BackgroundColor = OldBg;
         }
 
         /// <summary>Set the current console colours, or keep the previous colour</summary>
         public void SetSome(Nullable<ConsoleColor> fg, Nullable<ConsoleColor> bg)
         {
-            if (fg != null) Console.ForegroundColor = fg.Value;
-            if (bg != null) Console.BackgroundColor = bg.Value;
+            if (fg.HasValue) Console.ForegroundColor = fg.Value;
+            if (bg.HasValue) Console.BackgroundColor = bg.Value;
         }
 
 

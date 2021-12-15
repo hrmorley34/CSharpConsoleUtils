@@ -51,7 +51,7 @@ namespace ConsoleUtils.ConsoleImagery
         public bool Equals(ColoredChar obj) => !ReferenceEquals(obj, null) && Color == obj.Color && Char == obj.Char;
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType()) return false;
+            if (ReferenceEquals(obj, null) || GetType() != obj.GetType()) return false;
             return Equals((ColoredChar)obj);
         }
         public override int GetHashCode() => (Char.GetHashCode() * 31) + Color.GetHashCode();
@@ -180,7 +180,7 @@ namespace ConsoleUtils.ConsoleImagery
                 {
                     foreach (ColoredChar c in row)
                     {
-                        ColoredChar pc = c == null ? new ColoredChar(ConsoleColorPair.Reset, ' ') : c;
+                        ColoredChar pc = ReferenceEquals(c, null) ? new ColoredChar(ConsoleColorPair.Reset, ' ') : c;
                         s.Set(pc.Color);
                         Console.Write(pc.Char);
                     }
@@ -239,7 +239,7 @@ namespace ConsoleUtils.ConsoleImagery
         public bool Equals(ColoredTextImage obj) => !ReferenceEquals(obj, null) && IterRows().EnumerableEquals(obj.IterRows());
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType()) return false;
+            if (ReferenceEquals(obj, null) || GetType() != obj.GetType()) return false;
             return Equals((ColoredTextImage)obj);
         }
         public override int GetHashCode() => Image.GetHashCode();
