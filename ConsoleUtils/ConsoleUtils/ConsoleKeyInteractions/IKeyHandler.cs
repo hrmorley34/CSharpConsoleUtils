@@ -46,7 +46,7 @@ namespace ConsoleUtils.ConsoleKeyInteractions
         T ReadKeys() => ReadKeysMethod.ReadKeys<T>(this);
     }
 
-    internal static class ReadKeysMethod
+    public static class ReadKeysMethod
     {
         /// <summary>Read from the console until a value is recieved</summary>
         /// <returns>The value (<c>GetReturnValue()</c>)</returns>
