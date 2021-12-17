@@ -19,6 +19,8 @@ namespace ConsoleUtils.NUnitTests
             ConsoleColorPair c = new ConsoleColorPair(ConsoleColor.Blue);
             ConsoleColorPair d = new ConsoleColorPair(ConsoleColor.Red, ConsoleColor.White);
 
+            Generic_NullEquality(a);
+
             Assert.That(a, Is.Not.EqualTo(b));
             Assert.That(b, Is.Not.EqualTo(c));
             Assert.That(c, Is.Not.EqualTo(a));
@@ -30,12 +32,37 @@ namespace ConsoleUtils.NUnitTests
         }
 
         [Test]
+        public void ColoredChar_Equals()
+        {
+            ColoredChar blank = new ColoredChar();
+            ColoredChar blank2 = new ColoredChar();
+            ColoredChar blank3 = new ColoredChar(null, null);
+            ColoredChar a = new ColoredChar(null, 'a');
+            ConsoleColorPair color = new ConsoleColorPair(ConsoleColor.Red);
+            ColoredChar b = new ColoredChar(color, 'a');
+            ColoredChar c = new ColoredChar(null, 'c');
+
+            Generic_NullEquality(blank);
+            Assert.That(blank, Is.EqualTo(blank2));
+            Assert.That(blank, Is.EqualTo(blank3));
+            Assert.That(blank2, Is.EqualTo(blank3));
+            Assert.That(blank.WithChar('a'), Is.EqualTo(a));
+            Assert.That(a.WithColor(color), Is.EqualTo(b));
+            Assert.That(b.WithColor(null), Is.EqualTo(a));
+            Assert.That(b.WithColor(null).WithChar('c'), Is.EqualTo(c));
+            Assert.That(a.WithColor(null), Is.EqualTo(a));
+            Assert.That(a.WithChar(null), Is.EqualTo(blank));
+        }
+
+        [Test]
         public void ColoredTextImage_Equals()
         {
             ColoredTextImage original = new ColoredTextImage(new string[] { "abc", "def" }, new ConsoleColorPair(ConsoleColor.Green));
             ColoredTextImage copy = original.Copy();
             ColoredTextImage copy2 = new ColoredTextImage(new string[] { "abc", "def" }, new ConsoleColorPair(ConsoleColor.Green));
             ColoredTextImage different = new ColoredTextImage(new string[] { "abc", "def", "ghi" }, new ConsoleColorPair(ConsoleColor.Green));
+
+            Generic_NullEquality(original);
 
             Assert.That(original, Is.EqualTo(copy));
             Assert.That(original, Is.EqualTo(copy2));
@@ -98,6 +125,18 @@ namespace ConsoleUtils.NUnitTests
             Assert.That(third + fourth, Is.EqualTo(final2));
             Assert.That(() => second + "abc", Throws.TypeOf<MismatchedHeightException>());
             Assert.That(fourth + fifth, Is.EqualTo(final3));
+        }
+
+        public void Generic_NullEquality<T>(T value) where T : class
+        {
+            T? NullOne = null;
+            T? NullTwo = null;
+            Assert.That(NullOne == NullTwo);
+            Assert.That(NullOne != NullTwo, Is.False);
+            Assert.That(NullOne == value, Is.False);
+            Assert.That(NullOne != value);
+            Assert.That(value == NullTwo, Is.False);
+            Assert.That(value != NullTwo);
         }
     }
 }
