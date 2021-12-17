@@ -28,6 +28,7 @@ namespace ConsoleUtils.ConsoleKeyInteractions
 
         public PositiveIntegerKeyHandler()
         {
+            HasValue = false;
             Digits = new List<byte>();
         }
 
