@@ -1,4 +1,5 @@
 using System;
+using ConsoleUtils.ConsoleImagery.Util;
 
 namespace ConsoleUtils.ConsoleImagery
 {
@@ -53,8 +54,8 @@ namespace ConsoleUtils.ConsoleImagery
             return Equals((ConsoleColorPair)obj);
         }
         public override int GetHashCode() => (!Fg.HasValue ? 0 : ((int)Fg << 5) + (1 << 4)) + (!Bg.HasValue ? 0 : ((int)Bg << 1) + 1);
-        public static bool operator ==(ConsoleColorPair a, ConsoleColorPair b) => !ReferenceEquals(a, null) && a.Equals(b);
-        public static bool operator !=(ConsoleColorPair a, ConsoleColorPair b) => ReferenceEquals(a, null) || !a.Equals(b);
+        public static bool operator ==(ConsoleColorPair a, ConsoleColorPair b) => EqualsUtils.EqualsCheckNull(a, b);
+        public static bool operator !=(ConsoleColorPair a, ConsoleColorPair b) => !EqualsUtils.EqualsCheckNull(a, b);
 
         public void Deconstruct(out Nullable<ConsoleColor> fg, out Nullable<ConsoleColor> bg)
         {

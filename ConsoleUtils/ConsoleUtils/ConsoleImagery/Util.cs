@@ -4,6 +4,22 @@ using System.Linq;
 
 namespace ConsoleUtils.ConsoleImagery.Util
 {
+    public static class EqualsUtils
+    {
+        public static bool EqualsCheckNull<T>(T a, T b) where T : IEquatable<T>
+            => EqualsCheckNull(a, b, () => a.Equals(b));
+
+        public static bool EqualsCheckNull<T>(T a, T b, Func<T, T, bool> check)
+            => EqualsCheckNull(a, b, () => check(a, b));
+
+        public static bool EqualsCheckNull<T>(T a, T b, Func<bool> check)
+        {
+            if (ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, null)) return false;
+            if (ReferenceEquals(b, null)) return false;
+            return check();
+        }
+    }
 }
 
 namespace ConsoleUtils.ConsoleImagery.Util.Linq

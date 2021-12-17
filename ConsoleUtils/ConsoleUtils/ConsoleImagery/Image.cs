@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ConsoleUtils.ConsoleImagery.Util;
 using ConsoleUtils.ConsoleImagery.Util.Linq;
 
 namespace ConsoleUtils.ConsoleImagery
@@ -55,8 +56,8 @@ namespace ConsoleUtils.ConsoleImagery
             return Equals((ColoredChar)obj);
         }
         public override int GetHashCode() => (Char.GetHashCode() * 31) + Color.GetHashCode();
-        public static bool operator ==(ColoredChar a, ColoredChar b) => !ReferenceEquals(a, null) && a.Equals(b);
-        public static bool operator !=(ColoredChar a, ColoredChar b) => ReferenceEquals(a, null) || !a.Equals(b);
+        public static bool operator ==(ColoredChar a, ColoredChar b) => EqualsUtils.EqualsCheckNull(a, b);
+        public static bool operator !=(ColoredChar a, ColoredChar b) => !EqualsUtils.EqualsCheckNull(a, b);
 
         /// <summary>Deconstruct into colour and character</summary>
         public void Deconstruct(out ConsoleColorPair color, out char c)
@@ -243,8 +244,8 @@ namespace ConsoleUtils.ConsoleImagery
             return Equals((ColoredTextImage)obj);
         }
         public override int GetHashCode() => Image.GetHashCode();
-        public static bool operator ==(ColoredTextImage a, ColoredTextImage b) => !ReferenceEquals(a, null) && a.Equals(b);
-        public static bool operator !=(ColoredTextImage a, ColoredTextImage b) => ReferenceEquals(a, null) || !a.Equals(b);
+        public static bool operator ==(ColoredTextImage a, ColoredTextImage b) => EqualsUtils.EqualsCheckNull(a, b);
+        public static bool operator !=(ColoredTextImage a, ColoredTextImage b) => !EqualsUtils.EqualsCheckNull(a, b);
 
         public static ColoredTextImage operator +(ColoredTextImage a, ColoredTextImage b)
             => a.HorizontalAppend(b);
