@@ -4,7 +4,7 @@ using ConsoleUtils.ConsoleImagery;
 
 namespace ConsoleUtils.NUnitTests
 {
-    public class Tests
+    public class ConsoleImageryTests
     {
         [SetUp]
         public void Setup()
