@@ -7,31 +7,38 @@ using ConsoleUtils.ConsoleImagery.Util.Linq;
 namespace ConsoleUtils.ConsoleImagery
 {
     /// <summary>A character and a colour</summary>
-    public class ColoredChar : System.Runtime.CompilerServices.ITuple, IEquatable<ColoredChar?>
+    public record ColoredChar : System.Runtime.CompilerServices.ITuple, IEquatable<ColoredChar?>
     {
         /// <summary>Colour of the character</summary>
-        public readonly ConsoleColorPair Color;
+        public ConsoleColorPair Color { get; init; }
         /// <summary>Character to print</summary>
-        public readonly char Char;
+        public char Char { get; init; }
+
+        /// <summary>Default colour</summary>
+        public static readonly ConsoleColorPair DefaultColor = ConsoleColorPair.Reset;
+        /// <summary>Default character to print</summary>
+        public const char DefaultChar = ' ';
 
         /// <summary>Create a space character in default colours</summary>
         public ColoredChar()
         {
-            Color = ConsoleColorPair.Reset;
-            Char = ' ';
+            Color = DefaultColor;
+            Char = DefaultChar;
         }
 
         /// <summary>Create a character in a colour</summary>
         public ColoredChar(ConsoleColorPair? color, char? c)
         {
-            Color = color ?? ConsoleColorPair.Reset;
-            Char = c ?? ' ';
+            Color = color ?? DefaultColor;
+            Char = c ?? DefaultChar;
         }
 
         /// <summary>Create a copy with colour <c>color</c></summary>
-        public ColoredChar WithColor(ConsoleColorPair? color) => new ColoredChar(color, Char);
+        public ColoredChar WithColor(ConsoleColorPair? color)
+            => this with { Color = color ?? DefaultColor };
         /// <summary>Create a copy with character <c>c</c></summary>
-        public ColoredChar WithChar(char? c) => new ColoredChar(Color, c);
+        public ColoredChar WithChar(char? c)
+            => this with { Char = c ?? DefaultChar };
 
         /// <summary>Return tuple length</summary>
         public int Length { get => 2; }
@@ -48,16 +55,6 @@ namespace ConsoleUtils.ConsoleImagery
                 return null;
             }
         }
-
-        public bool Equals(ColoredChar? obj) => !ReferenceEquals(obj, null) && Color == obj.Color && Char == obj.Char;
-        public override bool Equals(object? obj)
-        {
-            if (ReferenceEquals(obj, null) || GetType() != obj.GetType()) return false;
-            return Equals((ColoredChar)obj);
-        }
-        public override int GetHashCode() => (Char.GetHashCode() * 31) + Color.GetHashCode();
-        public static bool operator ==(ColoredChar? a, ColoredChar? b) => EqualsUtils.EqualsCheckNull(a, b);
-        public static bool operator !=(ColoredChar? a, ColoredChar? b) => !EqualsUtils.EqualsCheckNull(a, b);
 
         /// <summary>Deconstruct into colour and character</summary>
         public void Deconstruct(out ConsoleColorPair color, out char c)

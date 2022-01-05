@@ -1,15 +1,14 @@
 using System;
-using ConsoleUtils.ConsoleImagery.Util;
 
 namespace ConsoleUtils.ConsoleImagery
 {
     /// <summary>A foreground and a background <c>ConsoleColor</c></summary>
-    public class ConsoleColorPair : IEquatable<ConsoleColorPair?>
+    public record ConsoleColorPair : IEquatable<ConsoleColorPair>
     {
         /// <summary>Background colour</summary>
-        public readonly ConsoleColor? Bg = null;
+        public ConsoleColor? Bg { get; init; } = null;
         /// <summary>Foreground colour</summary>
-        public readonly ConsoleColor? Fg = null;
+        public ConsoleColor? Fg { get; init; } = null;
 
         /// <summary>New pair with a foreground colour</summary>
         public ConsoleColorPair(ConsoleColor? fg)
@@ -25,16 +24,16 @@ namespace ConsoleUtils.ConsoleImagery
 
         /// <summary>Return a new pair using <c>fg</c> as the foreground colour</summary>
         public ConsoleColorPair WithFg(ConsoleColor? fg)
-            => new ConsoleColorPair(fg, Bg);
+            => this with { Fg = fg };
         /// <summary>Return a new pair using the foreground colour of <c>col</c> as the foreground colour</summary>
         public ConsoleColorPair WithFg(ConsoleColorPair? col)
-            => col == null ? this : new ConsoleColorPair(col.Fg, Bg);
+            => col == null ? this : this with { Fg = col.Fg };
         /// <summary>Return a new pair using <c>bg</c> as the background colour</summary>
         public ConsoleColorPair WithBg(ConsoleColor? bg)
-            => new ConsoleColorPair(Fg, bg);
+            => this with { Bg = bg };
         /// <summary>Return a new pair using the background colour of <c>col</c> as the background colour</summary>
         public ConsoleColorPair WithBg(ConsoleColorPair? col)
-            => col == null ? this : new ConsoleColorPair(Fg, col.Bg);
+            => col == null ? this : this with { Bg = col.Bg };
 
         /// <summary>Overlay colours from <c>col</c>, but keep <c>null</c>s in <c>col</c> as on this</summary>
         public ConsoleColorPair Overlay(ConsoleColorPair? col) => col?.Render(this) ?? this;
@@ -46,16 +45,6 @@ namespace ConsoleUtils.ConsoleImagery
         /// <summary>Return this, but with <c>null</c>s replaced by <c>fg</c> or <c>bg</c></summary>
         public (ConsoleColor, ConsoleColor) Render(ConsoleColor fg, ConsoleColor bg)
             => (Fg ?? fg, Bg ?? bg);
-
-        public bool Equals(ConsoleColorPair? obj) => !ReferenceEquals(obj, null) && Fg == obj.Fg && Bg == obj.Bg;
-        public override bool Equals(object? obj)
-        {
-            if (ReferenceEquals(obj, null) || GetType() != obj.GetType()) return false;
-            return Equals((ConsoleColorPair)obj);
-        }
-        public override int GetHashCode() => (!Fg.HasValue ? 0 : ((int)Fg << 5) + (1 << 4)) + (!Bg.HasValue ? 0 : ((int)Bg << 1) + 1);
-        public static bool operator ==(ConsoleColorPair? a, ConsoleColorPair? b) => EqualsUtils.EqualsCheckNull(a, b);
-        public static bool operator !=(ConsoleColorPair? a, ConsoleColorPair? b) => !EqualsUtils.EqualsCheckNull(a, b);
 
         public void Deconstruct(out ConsoleColor? fg, out ConsoleColor? bg)
         {

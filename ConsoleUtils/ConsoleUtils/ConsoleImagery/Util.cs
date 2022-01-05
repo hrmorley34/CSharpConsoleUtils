@@ -25,43 +25,7 @@ namespace ConsoleUtils.ConsoleImagery.Util
 namespace ConsoleUtils.ConsoleImagery.Util.Linq
 {
     /// <summary>An object and its index in an IEnumerable&lt;T&gt;</summary>
-    public class EnumeratedObject<T> : System.Runtime.CompilerServices.ITuple
-    {
-        /// <summary>Index of the object</summary>
-        public readonly int Index;
-        /// <summary>The object</summary>
-        public readonly T? Object;
-
-        /// <summary>Create a new EnumeratedObject</summary>
-        public EnumeratedObject(int index, T? obj)
-        {
-            Index = index;
-            Object = obj;
-        }
-
-        /// <summary>Length of tuple</summary>
-        public int Length { get => 2; }
-        /// <summary>Tuple items</summary>
-        public object? this[int index]
-        {
-            get
-            {
-                switch (index)
-                {
-                    case 0: return Index;
-                    case 1: return Object;
-                }
-                return null;
-            }
-        }
-
-        /// <summary>Deconstruct into index and object</summary>
-        public void Deconstruct(out int index, out T? obj)
-        {
-            index = Index;
-            obj = Object;
-        }
-    }
+    public record EnumeratedObject<T>(int Index, T Object);
 
     public static class EnumerableExtensions
     {
