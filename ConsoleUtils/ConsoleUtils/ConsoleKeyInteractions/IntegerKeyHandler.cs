@@ -33,13 +33,13 @@ namespace ConsoleUtils.ConsoleKeyInteractions
         }
 
         /// <summary>Output a digit</summary>
-        public void Print(byte digit) => Console.Write(digit);
+        virtual public void Print(byte digit) => Console.Write(digit);
 
         /// <summary>Delete the previous digit</summary>
-        public void PrintBackspace() => Console.Write("\b \b");
+        virtual public void PrintBackspace() => Console.Write("\b \b");
 
         /// <summary>Print a newline</summary>
-        public void PrintNewline() => Console.WriteLine();
+        virtual public void PrintNewline() => Console.WriteLine();
 
         public bool HandleKey(ConsoleKeyInfo keyInfo)
         {

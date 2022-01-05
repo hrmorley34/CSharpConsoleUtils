@@ -18,13 +18,13 @@ namespace ConsoleUtils.ConsoleKeyInteractions
         };
 
         /// <summary>Print output for this <c>ConsoleKeyInfo</c></summary>
-        public void Print(ConsoleKeyInfo keyInfo)
+        virtual public void Print(ConsoleKeyInfo keyInfo)
         {
             Console.WriteLine(YesNoKeys[keyInfo.Key] ? "y" : "n");
         }
 
         /// <summary>Print output for this <c>char</c></summary>
-        public void Print(char c)
+        virtual public void Print(char c)
         {
             Console.WriteLine(c.ToString().ToLower());
         }
