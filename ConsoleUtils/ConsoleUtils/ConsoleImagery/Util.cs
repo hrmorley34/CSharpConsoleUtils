@@ -62,7 +62,24 @@ namespace ConsoleUtils.ConsoleImagery.Util.Linq
 
         /// <summary>Turn a jagged array into a 2D array, mapping each element using <c>map</c></summary>
         public static MapT[,] Dejagged<InT, MapT>(this IEnumerable<IEnumerable<InT>> arr, Func<InT, MapT> map)
-            => Dejagged<InT, MapT>(arr.Select(e => e.ToArray()).ToArray(), map);
+        {
+            // return Dejagged<InT, MapT>(arr.Select(e => e.ToArray()).ToArray(), map);
+            int height = arr.Count();
+            if (height <= 0) return new MapT[0, 0];
+
+            int width = arr.First().Count();
+
+            MapT[,] newarr = new MapT[width, height];
+            foreach ((int y, IEnumerable<InT> row) in Enumerate(arr))
+            {
+                if (row.Count() != width) throw new ArgumentException("Array not square", nameof(arr));
+                foreach ((int x, InT value) in Enumerate(row))
+                {
+                    newarr[x, y] = map(value);
+                }
+            }
+            return newarr;
+        }
 
         public static bool EnumerableEquals<T>(this IEnumerable<T> a, IEnumerable<T> b, Func<T, T, bool> test)
         {
