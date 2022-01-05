@@ -97,12 +97,6 @@ namespace ConsoleUtils.ConsoleImagery
             Image = FilledFromImage(text, color);
         }
 
-        /// <summary>Create an image from the grid of characters</summary>
-        public ColoredTextImage(IEnumerable<string> text, ConsoleColorPair? color)
-        {
-            Image = FilledFromImage(text.Select(s => s.ToCharArray()), color);
-        }
-
         /// <summary>Create an image from the grid of characters and colours</summary>
         public ColoredTextImage(IEnumerable<IEnumerable<ColoredChar?>> text)
         {
@@ -219,18 +213,20 @@ namespace ConsoleUtils.ConsoleImagery
         /// <summary>Attach two images together. They must be of the same height.</summary>
         public static ColoredTextImage HorizontalAppend(IEnumerable<ColoredTextImage> images, int separation = 0)
         {
-            ColoredTextImage[] imagearr = images.ToArray();
-            if (imagearr.Length <= 0)
+            int length = images.Count();
+            if (length <= 0)
                 throw new ArgumentException();
-            else if (imagearr.Length == 1)
-                return imagearr[0];
+            else if (length == 1)
+                return images.Single();
 
-            if (!imagearr.All(im => im.YSize == imagearr[0].YSize))
+            int height = images.First().YSize;
+
+            if (!images.All(im => im.YSize == height))
                 throw new MismatchedHeightException();
 
-            ColoredTextImage dest = new ColoredTextImage(imagearr.Sum(im => im.XSize + separation) - separation, imagearr[0].YSize);
+            ColoredTextImage dest = new ColoredTextImage(images.Sum(im => im.XSize + separation) - separation, height);
             int xinsert = 0;
-            foreach (ColoredTextImage im in imagearr)
+            foreach (ColoredTextImage im in images)
             {
                 dest = dest.Overlay(im, (xinsert, 0));
                 xinsert += im.XSize + separation;
